@@ -20,9 +20,9 @@ type BucketCollector struct {
 }
 
 // NewBucketCollector creates a new git based collector
-func NewBucketCollector(bucketURL string, bucket *blob.Bucket, classifier string) (Collector, error) {
+func NewBucketCollector(bucketURL string, bucket *blob.Bucket, classifier string, timeout time.Duration) (Collector, error) {
 	return &BucketCollector{
-		Timeout:    time.Second * 20,
+		Timeout:    timeout,
 		bucketURL:  bucketURL,
 		bucket:     bucket,
 		classifier: classifier,

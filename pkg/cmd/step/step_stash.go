@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/jenkins-x/jx/pkg/cmd/helper"
 
@@ -33,6 +34,7 @@ type StepStashOptions struct {
 	StorageLocation jenkinsv1.StorageLocation
 	ProjectGitURL   string
 	ProjectBranch   string
+	Timeout         time.Duration
 }
 
 const (
@@ -103,6 +105,7 @@ func NewCmdStepStash(commonOpts *opts.CommonOptions) *cobra.Command {
 	cmd.Flags().StringVarP(&options.Basedir, "basedir", "", "", "The base directory to use to create relative output file names. e.g. if you specify '--pattern \"target/*.xml\" then you may want to supply '--basedir target' to strip the 'target/' prefix from all collected files")
 	cmd.Flags().StringVarP(&options.ProjectGitURL, "project-git-url", "", "", "The project git URL to collect for. Used to default the organisation and repository folders in the storage. If not specified its discovered from the local '.git' folder")
 	cmd.Flags().StringVarP(&options.ProjectBranch, "project-branch", "", "", "The project git branch of the project to collect for. Used to default the branch folder in the storage. If not specified its discovered from the local '.git' folder")
+	cmd.Flags().DurationVarP(&options.Timeout, "timeout", "", 20*time.Second, "The timeout of upload file to cloud storage, default is 20 seconds")
 	return cmd
 }
 
@@ -158,7 +161,7 @@ func (o *StepStashOptions) Run() error {
 		return fmt.Errorf("Missing option --git-url and we could not detect the current git repository URL")
 	}
 
-	coll, err := collector.NewCollector(o.StorageLocation, settings, o.Git())
+	coll, err := collector.NewCollector(o.StorageLocation, settings, o.Git(), o.Timeout)
 	if err != nil {
 		return errors.Wrapf(err, "failed to create the collector for storage settings %s", o.StorageLocation.Description())
 	}

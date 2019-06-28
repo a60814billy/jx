@@ -18,7 +18,7 @@ import (
 )
 
 // NewCollector creates a new collector from the storage configuration
-func NewCollector(storageLocation jenkinsv1.StorageLocation, settings *jenkinsv1.TeamSettings, gitter gits.Gitter) (Collector, error) {
+func NewCollector(storageLocation jenkinsv1.StorageLocation, settings *jenkinsv1.TeamSettings, gitter gits.Gitter, timeout time.Duration) (Collector, error) {
 	classifier := storageLocation.Classifier
 	if classifier == "" {
 		classifier = "default"
@@ -36,5 +36,5 @@ func NewCollector(storageLocation jenkinsv1.StorageLocation, settings *jenkinsv1
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to open bucket %s", u)
 	}
-	return NewBucketCollector(u, bucket, classifier)
+	return NewBucketCollector(u, bucket, classifier, timeout)
 }
